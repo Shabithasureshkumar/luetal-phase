@@ -31,7 +31,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   onQuickLog,
 }) => {
   return (
-    <aside className="w-full lg:w-[329px] bg-white lg:border-l-[1.2px] border-[#F3F4F6] p-[19.2px] space-y-6 shrink-0">
+    <aside className="w-full lg:w-[329px] bg-white lg:border-l-[1.2px] border-[#F3F4F6] p-4 sm:p-[19.2px] space-y-5 sm:space-y-6 shrink-0">
       {/* 1. Profile Card */}
       <ProfileCard profile={profile} />
 

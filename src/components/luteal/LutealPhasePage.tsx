@@ -21,26 +21,26 @@ export const LutealPhasePage: React.FC<LutealPhasePageProps> = ({
   onToggleCraving,
 }) => {
   return (
-    <section className="w-full bg-[#FFDEE9] rounded-[32px] p-8 border border-[#EBE6EC] shadow-[0px_8px_24px_rgba(173,149,178,0.06),0px_1px_2px_rgba(173,149,178,0.04)] relative">
+    <section className="w-full bg-[#FFDEE9] rounded-[24px] sm:rounded-[32px] p-3.5 sm:p-6 lg:p-8 border border-[#EBE6EC] shadow-[0px_8px_24px_rgba(173,149,178,0.06),0px_1px_2px_rgba(173,149,178,0.04)] relative">
       {/* Header */}
-      <div className="flex items-center gap-3.5 mb-7">
-        <div className="w-[44px] h-[44px] rounded-[18px] bg-white/70 backdrop-blur-md border border-white/70 shadow-[0px_10px_40px_-12px_rgba(183,110,199,0.18)] flex items-center justify-center text-[#B01163]">
-          <Droplet className="w-5 h-5 fill-[#B01163]" />
+      <div className="flex items-center gap-3 mb-4 sm:mb-6 lg:mb-7">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-[44px] lg:h-[44px] rounded-[14px] sm:rounded-[18px] bg-white/70 backdrop-blur-md border border-white/70 shadow-[0px_10px_40px_-12px_rgba(183,110,199,0.18)] flex items-center justify-center text-[#B01163] shrink-0">
+          <Droplet className="w-4 h-4 sm:w-5 sm:h-5 fill-[#B01163]" />
         </div>
         <div>
-          <h2 className="text-[24px] font-bold text-[#26214E] tracking-[-0.75px] leading-[36px]">
+          <h2 className="text-lg sm:text-xl lg:text-[24px] font-bold text-[#26214E] tracking-[-0.75px] leading-tight lg:leading-[36px]">
             Luteal Phase
           </h2>
-          <p className="text-[14px] font-normal text-[#716D8D] leading-[20px]">
+          <p className="text-xs sm:text-[14px] font-normal text-[#716D8D] leading-tight sm:leading-[20px] mt-0.5">
             {day.formattedLongDate}
           </p>
         </div>
       </div>
 
       {/* 3 Rows of Cards */}
-      <div className="space-y-6">
+      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
         {/* ROW 1: Mood Tracker & Body Weight */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 lg:gap-6">
           <div className="lg:col-span-7 flex">
             <MoodTracker
               currentMood={day.mood}
@@ -59,7 +59,7 @@ export const LutealPhasePage: React.FC<LutealPhasePageProps> = ({
         </div>
 
         {/* ROW 2: Fatigue, Sleep Quality, Energy Level */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           <div className="flex">
             <FatigueCard
               score={day.fatigueScore}
@@ -78,7 +78,7 @@ export const LutealPhasePage: React.FC<LutealPhasePageProps> = ({
         </div>
 
         {/* ROW 3: Cravings & AI Insight */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 lg:gap-6">
           <div className="lg:col-span-6 flex">
             <CravingsCard
               selectedCravings={day.cravings}

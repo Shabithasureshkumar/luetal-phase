@@ -13,20 +13,20 @@ export const CravingsCard: React.FC<CravingsCardProps> = ({
   const isSelected = (item: CravingType) => selectedCravings.includes(item);
 
   return (
-    <div className="w-full h-[194px] bg-white rounded-[48px] p-6 border-[6px] border-[#F5F4F4] shadow-xs flex flex-col justify-between">
+    <div className="w-full bg-white rounded-[24px] sm:rounded-[36px] lg:rounded-[48px] p-4 sm:p-5 lg:p-6 border-[3px] sm:border-[4px] lg:border-[6px] border-[#F5F4F4] shadow-xs flex flex-col justify-between lg:h-[194px]">
       {/* Top Header */}
       <div>
-        <span className="text-[12px] font-normal tracking-[1.2px] uppercase text-[#6B6578] block">
+        <span className="text-[10px] sm:text-[11px] lg:text-[12px] font-normal tracking-[1.2px] uppercase text-[#6B6578] block mb-2 sm:mb-2.5">
           CRAVINGS
         </span>
       </div>
 
       {/* 2x2 Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-2.5 lg:gap-3">
         {/* Row 1 */}
         <button
           onClick={() => onToggleCraving('Sweet')}
-          className={`h-[54px] rounded-[40px] px-4 text-[14px] font-normal tracking-[-0.16px] transition-all flex items-center justify-center ${
+          className={`h-[42px] sm:h-[48px] lg:h-[54px] rounded-[24px] sm:rounded-[32px] lg:rounded-[40px] px-3 sm:px-4 text-xs sm:text-[13px] lg:text-[14px] font-normal tracking-[-0.16px] transition-all flex items-center justify-center ${
             isSelected('Sweet')
               ? 'bg-[#FFEAF2] border border-[#E9ABC6] text-[#B01163]'
               : 'bg-white border border-[#EBE6EC] text-[#6B6578] hover:bg-gray-50'
@@ -37,7 +37,7 @@ export const CravingsCard: React.FC<CravingsCardProps> = ({
 
         <button
           onClick={() => onToggleCraving('Chocolate')}
-          className={`h-[54px] rounded-[40px] px-4 text-[14px] font-normal tracking-[-0.16px] transition-all flex items-center justify-center ${
+          className={`h-[42px] sm:h-[48px] lg:h-[54px] rounded-[24px] sm:rounded-[32px] lg:rounded-[40px] px-3 sm:px-4 text-xs sm:text-[13px] lg:text-[14px] font-normal tracking-[-0.16px] transition-all flex items-center justify-center ${
             isSelected('Chocolate')
               ? 'bg-[#FFEAF2] border border-[#E9ABC6] text-[#B01163]'
               : 'bg-white border border-[#EBE6EC] text-[#6B6578] hover:bg-gray-50'
@@ -49,7 +49,7 @@ export const CravingsCard: React.FC<CravingsCardProps> = ({
         {/* Row 2 */}
         <button
           onClick={() => onToggleCraving('Salty')}
-          className={`h-[54px] rounded-[40px] px-4 text-[14px] font-normal tracking-[-0.16px] transition-all flex items-center justify-center ${
+          className={`h-[42px] sm:h-[48px] lg:h-[54px] rounded-[24px] sm:rounded-[32px] lg:rounded-[40px] px-3 sm:px-4 text-xs sm:text-[13px] lg:text-[14px] font-normal tracking-[-0.16px] transition-all flex items-center justify-center ${
             isSelected('Salty')
               ? 'bg-[#FFEAF2] border border-[#E9ABC6] text-[#B01163]'
               : 'bg-white border border-[#EBE6EC] text-[#6B6578] hover:bg-gray-50'
@@ -60,7 +60,7 @@ export const CravingsCard: React.FC<CravingsCardProps> = ({
 
         <button
           onClick={() => onToggleCraving('None')}
-          className={`h-[54px] rounded-[40px] px-4 text-[14px] font-normal tracking-[-0.16px] transition-all flex items-center justify-center ${
+          className={`h-[42px] sm:h-[48px] lg:h-[54px] rounded-[24px] sm:rounded-[32px] lg:rounded-[40px] px-3 sm:px-4 text-xs sm:text-[13px] lg:text-[14px] font-normal tracking-[-0.16px] transition-all flex items-center justify-center ${
             isSelected('None')
               ? 'bg-[#FFEAF2] border border-[#E9ABC6] text-[#B01163]'
               : 'bg-white border border-[#EBE6EC] text-[#6B6578] hover:bg-gray-50'
