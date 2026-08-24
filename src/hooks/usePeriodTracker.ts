@@ -123,7 +123,7 @@ const INITIAL_DAYS: DayLogEntry[] = [
     formattedLongDate: 'Today, 21 June 2026',
     month: 'Jun',
     dayNumber: 21,
-    cycleDay: 15, // Continues from Ovulation CD 14 -> Luteal CD 15
+    cycleDay: 15,
     phase: 'luteal',
     isToday: true,
     isLogged: true,
@@ -302,7 +302,6 @@ export function usePeriodTracker() {
   const [selectedDate, setSelectedDate] = useState<string>('2026-06-21');
   const [profile] = useState<UserProfile>(INITIAL_PROFILE);
   const [devices] = useState<ConnectedDevice[]>(INITIAL_DEVICES);
-  const [isEditLogModalOpen, setIsEditLogModalOpen] = useState(false);
 
   const selectedDay = useMemo(() => {
     return (
@@ -522,8 +521,6 @@ export function usePeriodTracker() {
     devices,
     cycleSummary,
     insightsList,
-    isEditLogModalOpen,
-    setIsEditLogModalOpen,
     selectDate,
     goToToday,
     goToPreviousDay,

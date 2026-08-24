@@ -25,10 +25,10 @@ export const PersonalNotesCard: React.FC<PersonalNotesCardProps> = ({
 
   return (
     <div className="w-full">
-      <h3 className="text-[15.6px] font-bold text-[#1F2937] leading-[23.4px]">
+      <h3 className="text-[clamp(14px,1.5vw,15.6px)] font-bold text-[#1F2937] leading-[23.4px]">
         Personal Notes
       </h3>
-      <p className="text-[13.2px] font-normal text-[#9CA3AF] leading-[19.8px] mt-0.5 mb-2">
+      <p className="text-[clamp(11px,1.2vw,13.2px)] font-normal text-[#9CA3AF] leading-[19.8px] mt-0.5 mb-2">
         Add your thoughts for today
       </p>
 
@@ -51,7 +51,7 @@ export const PersonalNotesCard: React.FC<PersonalNotesCardProps> = ({
 
       <button
         onClick={handleSave}
-        className="w-full h-[41px] rounded-[14.4px] bg-[#EA33A1] hover:bg-[#D61E8C] active:scale-[0.99] text-white text-[14.4px] font-semibold transition-all shadow-xs flex items-center justify-center gap-1.5"
+        className="w-full h-[44px] rounded-[14.4px] bg-[#EA33A1] hover:bg-[#D61E8C] active:scale-[0.99] text-white text-[14.4px] font-semibold transition-all shadow-xs flex items-center justify-center gap-1.5"
       >
         {savedMessage ? (
           <>

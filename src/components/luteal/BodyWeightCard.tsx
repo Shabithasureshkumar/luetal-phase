@@ -21,22 +21,22 @@ export const BodyWeightCard: React.FC<BodyWeightCardProps> = ({
     <div className="w-full bg-white rounded-[24px] sm:rounded-[36px] lg:rounded-[48px] p-4 sm:p-5 lg:p-6 border-[3px] sm:border-[4px] lg:border-[6px] border-[#F5F4F4] shadow-xs flex flex-col justify-between lg:h-[233px]">
       {/* Top Header */}
       <div>
-        <span className="text-[10px] sm:text-[11px] lg:text-[12px] font-normal tracking-[1.2px] uppercase text-[#6B6578] block">
+        <span className="text-[clamp(10px,1.1vw,12px)] font-normal tracking-[1.2px] uppercase text-[#6B6578] block">
           BODY WEIGHT
         </span>
 
         {/* Value + Change Badge */}
         <div className="flex items-baseline justify-between mt-1 flex-wrap gap-2">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl sm:text-3xl lg:text-[36px] font-semibold text-[#1C1923] tracking-[-0.9px] leading-tight lg:leading-[40px]">
+            <span className="text-[clamp(24px,3vw,36px)] font-semibold text-[#1C1923] tracking-[-0.9px] leading-tight lg:leading-[40px]">
               {weight.toFixed(1)}
             </span>
-            <span className="text-xs sm:text-sm lg:text-[16px] font-normal text-[#6B6578]">
+            <span className="text-[clamp(12px,1.5vw,16px)] font-normal text-[#6B6578]">
               {weightUnit}
             </span>
           </div>
 
-          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFEAF2] text-[#B01163] text-[10px] sm:text-[11px] lg:text-[12px] font-normal">
+          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFEAF2] text-[#B01163] text-[clamp(10px,1.1vw,12px)] font-normal whitespace-nowrap">
             <TrendingUp className="w-3 h-3 stroke-[2.2]" />
             <span>{weightDelta}</span>
           </div>
@@ -45,7 +45,7 @@ export const BodyWeightCard: React.FC<BodyWeightCardProps> = ({
 
       {/* Water Retention Section */}
       <div className="bg-[#FFEAF2]/50 rounded-[20px] sm:rounded-[28px] lg:rounded-[40px] p-3 sm:p-3.5 lg:p-4 mt-3 sm:mt-4 lg:mt-0">
-        <div className="flex items-center justify-between text-[11px] lg:text-[12px] mb-2">
+        <div className="flex items-center justify-between text-[clamp(11px,1.2vw,12px)] mb-2">
           <span className="text-[#6B6578] font-normal">Water retention</span>
           <span className="text-[#B01163] font-semibold">{waterRetention}</span>
         </div>

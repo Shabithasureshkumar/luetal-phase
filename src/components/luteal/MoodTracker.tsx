@@ -67,10 +67,10 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({
       {/* Top Header */}
       <div className="flex items-start justify-between">
         <div>
-          <span className="text-[10px] sm:text-[11px] lg:text-[12px] font-normal tracking-[1.2px] uppercase text-[#B01163]/70 block">
+          <span className="text-[clamp(10px,1.1vw,12px)] font-normal tracking-[1.2px] uppercase text-[#B01163]/70 block">
             MOOD TRACKER
           </span>
-          <h3 className="text-lg sm:text-2xl lg:text-[30px] font-semibold text-[#66034D] tracking-[-0.75px] leading-tight lg:leading-[36px] mt-0.5 sm:mt-1">
+          <h3 className="text-[clamp(18px,2.5vw,30px)] font-semibold text-[#66034D] tracking-[-0.75px] leading-tight lg:leading-[36px] mt-0.5 sm:mt-1">
             {getMoodHeading(currentMood)}
           </h3>
         </div>
@@ -81,14 +81,14 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({
       </div>
 
       {/* 5 Mood Option Buttons in a Row */}
-      <div className="grid grid-cols-5 gap-1 sm:gap-2 lg:gap-2.5 mt-3 sm:mt-4 lg:mt-0">
+      <div className="grid grid-cols-5 gap-1 sm:gap-2 lg:gap-2.5 mt-3 sm:mt-4 lg:mt-0 w-full min-w-0">
         {moodOptions.map((option) => {
           const isSelected = currentMood === option.id;
           return (
             <button
               key={option.id}
               onClick={() => onSelectMood(option.id)}
-              className={`h-[54px] sm:h-[66px] lg:h-[76px] rounded-[18px] sm:rounded-[28px] lg:rounded-[40px] px-1 py-1.5 sm:py-2.5 lg:p-4 flex flex-col items-center justify-center transition-all duration-200 ${
+              className={`h-[clamp(52px,6vw,76px)] rounded-[18px] sm:rounded-[28px] lg:rounded-[40px] px-1 py-1 sm:py-2.5 lg:p-4 flex flex-col items-center justify-center transition-all duration-200 min-w-0 ${
                 isSelected
                   ? 'bg-white text-[#B01163] shadow-[0px_2px_7.5px_-2px_rgba(195,38,119,0.25),0px_4px_10.8px_-1px_rgba(226,17,142,0.35)] scale-[1.02]'
                   : 'bg-white/40 hover:bg-white/70 text-[#9E165E]/70'
@@ -97,7 +97,7 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({
               <div className="mb-0.5 sm:mb-1 flex items-center justify-center shrink-0">
                 {option.icon}
               </div>
-              <span className="text-[9.5px] sm:text-[11px] lg:text-[12px] font-normal tracking-tight leading-none text-center">
+              <span className="text-[clamp(9px,1.1vw,12px)] font-normal tracking-tight leading-none text-center truncate w-full px-0.5">
                 {option.label}
               </span>
             </button>

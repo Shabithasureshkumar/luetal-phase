@@ -14,7 +14,7 @@ export const TodayInsightsCard: React.FC<TodayInsightsCardProps> = ({
 }) => {
   return (
     <div className="w-full">
-      <h3 className="text-[15.6px] font-bold text-[#1F2937] leading-[23.4px] mb-2.5">
+      <h3 className="text-[clamp(14px,1.5vw,15.6px)] font-bold text-[#1F2937] leading-[23.4px] mb-2.5">
         Today's Insights
       </h3>
 
@@ -22,7 +22,7 @@ export const TodayInsightsCard: React.FC<TodayInsightsCardProps> = ({
         {insights.map((insight, idx) => (
           <li key={idx} className="flex items-start gap-2.5">
             <span className="w-[7.2px] h-[7.2px] rounded-full bg-[#A855F7] mt-1.5 shrink-0" />
-            <p className="text-[13.2px] font-normal text-[#4B5563] leading-[19.8px]">
+            <p className="text-[clamp(12px,1.2vw,13.2px)] font-normal text-[#4B5563] leading-[19.8px]">
               {insight}
             </p>
           </li>

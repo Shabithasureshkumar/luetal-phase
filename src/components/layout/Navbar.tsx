@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Search,
@@ -40,6 +40,25 @@ export const Navbar: React.FC<NavbarProps> = ({
     onTabChange?.(tabName);
     setIsMobileDrawerOpen(false);
   };
+
+  // Manage body scroll lock and escape key for mobile drawer
+  useEffect(() => {
+    if (isMobileDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setIsMobileDrawerOpen(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [isMobileDrawerOpen]);
 
   return (
     <header className="w-full max-w-[1380px] mx-auto pt-2 sm:pt-6 pb-1 sm:pb-2 px-2 sm:px-4 block min-w-0 max-w-full">
@@ -90,22 +109,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* 3 Circular Actions */}
           <div className="flex items-center gap-2 lg:gap-2.5">
             <button
-              className="w-10 h-10 lg:w-[51.5px] lg:h-[51.5px] rounded-full bg-[#DDE2E8] hover:bg-gray-300 flex items-center justify-center text-gray-700 transition-colors"
+              className="w-10 h-10 lg:w-[51.5px] lg:h-[51.5px] rounded-full bg-[#DDE2E8] hover:bg-gray-300 flex items-center justify-center text-gray-700 transition-all active:scale-95"
               title="Search"
+              aria-label="Search"
             >
               <Search className="w-4 h-4 lg:w-5 lg:h-5" />
             </button>
             <button
-              className="w-10 h-10 lg:w-[51.5px] lg:h-[51.5px] rounded-full bg-white hover:bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-700 shadow-xs transition-colors"
+              className="w-10 h-10 lg:w-[51.5px] lg:h-[51.5px] rounded-full bg-white hover:bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-700 shadow-xs transition-all active:scale-95"
               title="Settings"
+              aria-label="Settings"
             >
               <Settings className="w-4 h-4 lg:w-5 lg:h-5" />
             </button>
             <button
-              className="w-10 h-10 lg:w-[51.5px] lg:h-[51.5px] rounded-full bg-white hover:bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-700 shadow-xs transition-colors"
+              className="w-10 h-10 lg:w-[51.5px] lg:h-[51.5px] rounded-full bg-white hover:bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-700 shadow-xs transition-all active:scale-95 relative"
               title="Notifications"
+              aria-label="Notifications"
             >
               <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#EA33A1] border-2 border-white" />
             </button>
           </div>
 
@@ -147,6 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           onClick={() => setIsMobileDrawerOpen(true)}
           className="w-10 h-10 rounded-full bg-white border border-gray-200/80 shadow-xs flex items-center justify-center text-[#1F2937] active:scale-95 transition-transform shrink-0"
           title="Open Navigation"
+          aria-label="Open Navigation Menu"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -156,20 +180,24 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             className="w-9 h-9 rounded-full bg-[#DDE2E8] flex items-center justify-center text-gray-700 active:scale-95 transition-transform"
             title="Search"
+            aria-label="Search"
           >
             <Search className="w-4 h-4" />
           </button>
           <button
             className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-700 active:scale-95 transition-transform shadow-xs"
             title="Settings"
+            aria-label="Settings"
           >
             <Settings className="w-4 h-4" />
           </button>
           <button
             className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-700 active:scale-95 transition-transform shadow-xs relative"
             title="Notifications"
+            aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EA33A1] border border-white" />
           </button>
           <div className="w-9 h-9 rounded-full overflow-hidden border border-gray-200 bg-purple-100 flex items-center justify-center text-purple-700 shrink-0 shadow-xs">
             {doctorImage ? (
@@ -192,11 +220,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Navigation Drawer / Slide-Over Overlay                             */}
       {/* ========================================================================= */}
       {isMobileDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden animate-fadeIn">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation Menu"
+          className="fixed inset-0 z-50 flex md:hidden animate-fadeIn"
+        >
           {/* Backdrop */}
           <div
             onClick={() => setIsMobileDrawerOpen(false)}
             className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            aria-hidden="true"
           />
 
           {/* Drawer Menu Content */}
@@ -215,6 +249,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   onClick={() => setIsMobileDrawerOpen(false)}
                   className="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                  aria-label="Close Navigation Menu"
                 >
                   <X className="w-5 h-5" />
                 </button>

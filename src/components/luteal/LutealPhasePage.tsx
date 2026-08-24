@@ -28,10 +28,10 @@ export const LutealPhasePage: React.FC<LutealPhasePageProps> = ({
           <Droplet className="w-4 h-4 sm:w-5 sm:h-5 fill-[#B01163]" />
         </div>
         <div>
-          <h2 className="text-lg sm:text-xl lg:text-[24px] font-bold text-[#26214E] tracking-[-0.75px] leading-tight lg:leading-[36px]">
+          <h2 className="text-[clamp(18px,2.2vw,24px)] font-bold text-[#26214E] tracking-[-0.75px] leading-tight lg:leading-[36px]">
             Luteal Phase
           </h2>
-          <p className="text-xs sm:text-[14px] font-normal text-[#716D8D] leading-tight sm:leading-[20px] mt-0.5">
+          <p className="text-[clamp(12px,1.4vw,14px)] font-normal text-[#716D8D] leading-tight sm:leading-[20px] mt-0.5">
             {day.formattedLongDate}
           </p>
         </div>
@@ -70,6 +70,7 @@ export const LutealPhasePage: React.FC<LutealPhasePageProps> = ({
             <SleepQualityCard
               hours={day.sleepHours}
               efficiency={day.sleepEfficiency}
+              barHeights={day.sleepBarHeights}
             />
           </div>
           <div className="flex">
