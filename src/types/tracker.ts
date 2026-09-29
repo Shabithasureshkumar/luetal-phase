@@ -1,80 +1,71 @@
-export type CyclePhase = 'menstruation' | 'fertile' | 'ovulation' | 'luteal';
+export type CyclePhase = 'menstruation' | 'follicular' | 'fertile' | 'ovulation' | 'luteal';
 
-export type MoodType = 'Happy' | 'Calm' | 'Emotional' | 'Irritated' | 'Anxious';
-
-export type CravingType = 'Sweet' | 'Chocolate' | 'Salty' | 'None';
-
-export type WaterRetentionLevel = 'Low' | 'Moderate' | 'High';
-
-export interface ConnectedDevice {
+export interface PatientProfile {
+  /** Placeholder until backend patient records are wired in */
   id: string;
   name: string;
-  type: 'watch' | 'thermometer' | 'scale';
-  syncedTime: string;
-  isSynced: boolean;
-}
-
-export interface WellnessMetricsData {
-  sleep: string;
-  mood: string;
-  water: string;
-  steps: string;
-  weight: string;
-  sexActivity: string;
-}
-
-export interface DayLogEntry {
-  date: string; // YYYY-MM-DD
-  displayDate: string; // e.g. "Jun 21, 2026"
-  formattedLongDate: string; // e.g. "Today, 21 June 2026"
-  month: string; // e.g. "Jun"
-  dayNumber: number; // e.g. 21
-  cycleDay: number; // e.g. 15 (or CD 1 in some views, continuous Cycle Day)
-  phase: CyclePhase;
-  isToday: boolean;
-  isLogged: boolean;
-  
-  // Luteal Phase Specific Metrics
-  mood: MoodType;
-  weight: number; // 62.4
-  weightUnit: string; // "kg"
-  weightDelta: string; // "+0.6 kg vs yesterday"
-  waterRetention: WaterRetentionLevel;
-  waterRetentionPercent: number; // e.g. 60
-  fatigueScore: number; // 8
-  fatigueMax: number; // 10
-  sleepHours: number; // 7.2
-  sleepEfficiency: number; // 92
-  sleepBarHeights: number[]; // [33, 43, 28, 40, 45, 38, 36]
-  energyLevel: number; // 55
-  cravings: CravingType[]; // ['Chocolate', 'Salty']
-  
-  // AI Insight
-  aiInsightTitle: string;
-  aiInsightHeading: string;
-  aiInsightText: string;
-
-  // Wellness summary
-  wellnessMetrics: WellnessMetricsData;
-
-  // Sidebar Notes
-  notes: string;
-  
-  // Quick Log States
-  flow?: string;
-  symptoms?: string[];
-}
-
-export interface CycleSummaryData {
-  currentPhase: string;
-  ovulationDate: string;
-  fertileWindow: string;
-  lutealPhase: string;
-}
-
-export interface UserProfile {
-  name: string;
-  gender: string;
   age: number;
-  avatarUrl?: string;
+  gender: string;
+  heightCm: number;
+  weightKg: number;
+  cycleLengthDays: number;
+  bmi: number;
+}
+
+export type MoodType = 'Happy' | 'Calm' | 'Neutral' | 'Irritable' | 'Sad';
+export type FatigueLevel = 'None' | 'Mild' | 'Moderate' | 'High';
+export type SleepQuality = 'Poor' | 'Fair' | 'Good' | 'Excellent';
+export type EnergyLevel = 'Low' | 'Moderate' | 'High';
+export type CravingLevel = 'None' | 'Mild' | 'Moderate' | 'High';
+export type MedicationStatus = 'taken' | 'skipped' | null;
+
+export interface Medication {
+  id: string;
+  name: string;
+  /** Dosage, e.g. "400 mg" */
+  dose: string;
+  /** Medication type, e.g. "Capsule" */
+  form: string;
+  /** e.g. "Once daily"; '' when not scheduled */
+  frequency: string;
+  /** Scheduled time as "HH:MM" (24h); '' when not set */
+  time: string;
+  /** ISO dates bounding the schedule; '' = open-ended */
+  startDate: string;
+  endDate: string;
+  reminder: boolean;
+}
+
+/** Everything recorded on the Daily Log for one calendar date. */
+export interface DailyLogData {
+  mood: MoodType | null;
+  weight: string;
+  medications: Record<string, MedicationStatus>;
+  fatigue: FatigueLevel | null;
+  sleep: SleepQuality | null;
+  energy: EnergyLevel | null;
+  cravings: CravingLevel | null;
+  stepGoal: number;
+  steps: number;
+  waterMl: number;
+}
+
+export type FlowLevel = 'Spotting' | 'Light' | 'Medium' | 'Heavy';
+export type CrampsLevel = 'None' | 'Mild' | 'Moderate' | 'Severe';
+
+/** A "Log Period" entry for one calendar date. */
+export interface PeriodLog {
+  flow: FlowLevel;
+  cramps: CrampsLevel;
+  clots: boolean;
+  notes: string;
+}
+
+export interface MedicationHistoryEntry {
+  id: string;
+  name: string;
+  dose: string;
+  date: string;
+  time: string;
+  phase: string;
 }
