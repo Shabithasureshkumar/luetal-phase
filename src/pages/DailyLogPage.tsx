@@ -14,6 +14,7 @@ import { DailyActivitySection } from '../components/daily-log/DailyActivitySecti
 import { HydrationSection } from '../components/daily-log/HydrationSection';
 import { MedicationSection } from '../components/daily-log/MedicationSection';
 import { SaveLogBar } from '../components/daily-log/SaveLogBar';
+import { IntercourseSection, SymptomTrackingSection } from '../components/daily-log/LutealLogSections';
 
 const tileEmoji = 'text-[clamp(26px,2.1vw,36px)]';
 const headerEmoji = 'text-[clamp(22px,1.7vw,28px)]';
@@ -160,6 +161,28 @@ export function DailyLogPage() {
         />
         <HydrationSection {...log.hydration} onChange={log.changeWater} />
       </div>
+
+      {/* Luteal-only logging: shown when the selected date's detected phase is luteal */}
+      {info.phase === 'luteal' && (
+        <>
+          <SymptomTrackingSection
+            draft={draft}
+            errors={log.fieldErrors}
+            phaseLabel={PHASE_INFO.luteal.title}
+            onToggleSymptom={log.luteal.toggleSymptom}
+            onToggleNoSymptoms={log.luteal.toggleNoSymptoms}
+            onSeverity={log.luteal.setSeverity}
+            onCustomSymptom={log.luteal.setCustomSymptom}
+          />
+          <IntercourseSection
+            draft={draft}
+            errors={log.fieldErrors}
+            onAnswer={log.luteal.setIntercourse}
+            onProtection={log.luteal.setProtection}
+            onProtectionOther={log.luteal.setProtectionOther}
+          />
+        </>
+      )}
 
       <SaveLogBar
         date={selectedDate}

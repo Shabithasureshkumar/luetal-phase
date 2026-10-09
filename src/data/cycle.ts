@@ -6,10 +6,12 @@ import type {
   EnergyLevel,
   FatigueLevel,
   FlowLevel,
+  LutealSymptom,
   Medication,
   MedicationHistoryEntry,
   MoodType,
   PatientProfile,
+  ProtectionMethod,
   SleepQuality,
 } from '../types/tracker';
 
@@ -21,6 +23,32 @@ export const ENERGY_LEVELS: readonly EnergyLevel[] = ['Low', 'Moderate', 'High']
 export const CRAVING_LEVELS: readonly CravingLevel[] = ['None', 'Mild', 'Moderate', 'High'];
 export const FLOW_LEVELS: readonly FlowLevel[] = ['Spotting', 'Light', 'Medium', 'Heavy'];
 export const CRAMPS_LEVELS: readonly CrampsLevel[] = ['None', 'Mild', 'Moderate', 'Severe'];
+export const LUTEAL_SYMPTOMS: readonly LutealSymptom[] = [
+  'Mood changes',
+  'Bloating',
+  'Breast tenderness',
+  'Food cravings',
+  'Fatigue',
+  'Headache',
+  'Acne',
+  'Cramps',
+  'Trouble sleeping',
+  'Other',
+];
+export const PROTECTION_METHODS: readonly ProtectionMethod[] = ['Pill', 'Condom', 'None', 'Other'];
+export const SEVERITY_SCALE = Array.from({ length: 11 }, (_, i) => i); // 0 none – 10 worst
+
+/** Symptom / intercourse fields of an unlogged day (nothing selected, nothing assumed). */
+export const EMPTY_LUTEAL_FIELDS = {
+  phase: null,
+  symptoms: [],
+  noSymptoms: false,
+  customSymptom: '',
+  symptomSeverity: null,
+  intercourse: null,
+  protection: null,
+  protectionOther: '',
+} as const satisfies Partial<DailyLogData>;
 
 export const PATIENT: PatientProfile = {
   id: 'PT-000001', // placeholder — replace with the backend patient ID
@@ -49,11 +77,11 @@ interface PhaseInfo {
 
 export const PHASE_INFO: Record<CyclePhase, PhaseInfo> = {
   menstruation: {
-    title: 'Menstruation',
-    label: 'Menstruation',
-    short: 'Menstrual',
-    heading: "You're on your period",
-    description: 'Your body is shedding the uterine lining. You may notice cramps, lower energy and tiredness during this phase.',
+    title: 'Menstruation Phase',
+    label: 'Menstruation phase',
+    short: 'Period',
+    heading: "You’re on your period",
+    description: 'Your body is shedding the uterine lining. It’s normal to feel lower energy. Take rest, stay hydrated, and be kind to yourself.',
     insight: "You're menstruating. Energy may be lower and cramps are common. Focus on iron-rich foods, warmth, hydration and rest.",
     recommendation:
       "You're doing great! Take rest, stay warm, and be kind to yourself. You're on your period. Energy may be lower and cramps are common. Focus on rest, hydration, iron-rich meals and gentle movement.",
@@ -62,28 +90,28 @@ export const PHASE_INFO: Record<CyclePhase, PhaseInfo> = {
     title: 'Follicular Phase',
     label: 'Follicular phase',
     short: 'Follicular',
-    heading: "You're in your follicular phase",
-    description: 'Estrogen is rising as your body prepares to ovulate. Energy, mood and focus often improve during this phase.',
+    heading: "You’re in your follicular phase",
+    description: 'Your body is preparing for ovulation. Estrogen levels are rising, and you may notice more energy and a brighter mood. This is a great time to focus on healthy habits!',
     insight: "You're in your follicular phase. Rising estrogen often lifts energy and mood. A good time for more active movement.",
     recommendation:
       "You're doing great! Your energy is rising. You're in your follicular phase. Estrogen is increasing, which often lifts mood and focus. A good time for active movement, fresh foods and new goals.",
   },
   fertile: {
-    title: 'Fertile Window',
+    title: 'Fertile Window Phase',
     label: 'Fertile window',
     short: 'Fertile',
-    heading: "You're in your fertile window",
+    heading: "You’re in your fertile window",
     description: 'Ovulation is approaching. You may notice higher energy, changes in cervical fluid and a stronger libido.',
     insight: "You're in your fertile window. Energy and mood are typically high. Stay hydrated and keep a balanced routine.",
     recommendation:
       "You're doing great! You're in your fertile window. Energy and mood are often high as ovulation approaches. Stay hydrated, keep a balanced routine and track any cycle signs that matter to you.",
   },
   ovulation: {
-    title: 'Ovulation',
-    label: 'Ovulation',
+    title: 'Ovulation Phase',
+    label: 'Ovulation phase',
     short: 'Ovulation',
-    heading: "You're ovulating",
-    description: 'An egg is being released. Some people notice mild one-sided pain or a small rise in body temperature.',
+    heading: "You’re in your ovulation phase",
+    description: 'An egg is being released. Estrogen and energy peak around now. Listen to your body and stay hydrated.',
     insight: "It's ovulation day. Estrogen peaks and energy is usually at its highest. Listen to your body and stay hydrated.",
     recommendation:
       "You're doing great! It's your estimated ovulation day. Estrogen peaks and energy is often at its highest. Stay hydrated, listen to your body and enjoy higher-energy activities.",
@@ -92,9 +120,9 @@ export const PHASE_INFO: Record<CyclePhase, PhaseInfo> = {
     title: 'Luteal Phase',
     label: 'Luteal phase',
     short: 'Luteal',
-    heading: "You're in your luteal phase",
+    heading: "You’re in your luteal phase",
     description:
-      'Your body is preparing for menstruation. You may notice changes in mood, fatigue, cravings and sleep during this phase.',
+      'Your body is preparing for menstruation. Progesterone is rising. Focus on rest, hydration, and gentle care.',
     insight:
       "You're in your luteal phase. You may notice changes in mood, energy, sleep and cravings as progesterone peaks. Focus on magnesium, hydration, and gentle movement.",
     recommendation:
@@ -144,6 +172,8 @@ export const EMPTY_DAILY_LOG: DailyLogData = {
   stepGoal: 5000,
   steps: 0,
   waterMl: 0,
+  ...EMPTY_LUTEAL_FIELDS,
+  symptoms: [],
 };
 
 /** Demo entry seeded for "today" on first launch (matches the design reference). */
@@ -158,6 +188,8 @@ export const SAMPLE_DAILY_LOG: DailyLogData = {
   stepGoal: 5000,
   steps: 5240,
   waterMl: 1250,
+  ...EMPTY_LUTEAL_FIELDS,
+  symptoms: [],
 };
 
 /** Demo baseline: today is cycle day 21 (luteal) on first launch. */

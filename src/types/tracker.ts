@@ -19,6 +19,20 @@ export type EnergyLevel = 'Low' | 'Moderate' | 'High';
 export type CravingLevel = 'None' | 'Mild' | 'Moderate' | 'High';
 export type MedicationStatus = 'taken' | 'skipped' | null;
 
+export type LutealSymptom =
+  | 'Mood changes'
+  | 'Bloating'
+  | 'Breast tenderness'
+  | 'Food cravings'
+  | 'Fatigue'
+  | 'Headache'
+  | 'Acne'
+  | 'Cramps'
+  | 'Trouble sleeping'
+  | 'Other';
+
+export type ProtectionMethod = 'Pill' | 'Condom' | 'None' | 'Other';
+
 export interface Medication {
   id: string;
   name: string;
@@ -48,6 +62,21 @@ export interface DailyLogData {
   stepGoal: number;
   steps: number;
   waterMl: number;
+  /** Cycle phase detected for this date at the time the log was saved */
+  phase: CyclePhase | null;
+  /** Luteal symptom tracking */
+  symptoms: LutealSymptom[];
+  /** "No symptoms today" — mutually exclusive with `symptoms` */
+  noSymptoms: boolean;
+  /** Free text, required when `symptoms` includes "Other" */
+  customSymptom: string;
+  /** Optional 0 (none) – 10 (worst) */
+  symptomSeverity: number | null;
+  /** null = not answered (never assumed to mean "No") */
+  intercourse: boolean | null;
+  protection: ProtectionMethod | null;
+  /** Free text, required when protection is "Other" */
+  protectionOther: string;
 }
 
 export type FlowLevel = 'Spotting' | 'Light' | 'Medium' | 'Heavy';

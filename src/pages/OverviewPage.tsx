@@ -14,6 +14,9 @@ import { MetricCard, type MetricCardProps } from '../components/overview/MetricC
 import { PhaseCard } from '../components/overview/PhaseCard';
 import { LogPeriodModal } from '../components/overview/LogPeriodModal';
 import { AvaAssistantModal } from '../components/overview/AvaAssistantModal';
+import { LutealLogCards } from '../components/overview/LutealLogCards';
+import { formatDate } from '../lib/date';
+import { LUTEAL_SECTION_IDS, personalizeRecommendation } from '../lib/lutealLog';
 import { useAvaChat } from '../hooks/useAvaChat';
 import type { AvaContext } from '../lib/ava';
 
@@ -98,8 +101,29 @@ function scrollToRecommendation() {
   target.focus({ preventScroll: true });
 }
 
+/**
+ * Opens Daily Log (it keeps the shared selected date) and scrolls to a section once it renders.
+ * If the date isn't in the luteal phase the section doesn't exist and Daily Log simply opens at the top.
+ */
+function openDailyLogSection(onNavigate: (route: CycleRoute) => void, sectionId: string) {
+  onNavigate('/daily-log');
+  let attempts = 0;
+  // Timer-based (not requestAnimationFrame) so it also works while the tab is in the background
+  const reveal = () => {
+    const target = document.getElementById(sectionId);
+    if (!target) {
+      if (++attempts < 20) window.setTimeout(reveal, 25);
+      return;
+    }
+    const smooth = document.visibilityState === 'visible' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  };
+  window.setTimeout(reveal, 0);
+}
+
 export function OverviewPage({ onNavigate }: { onNavigate: (route: CycleRoute) => void }) {
-  const { today, logs, periods, savePeriodLog, cycleInfo } = useTracker();
+  const { today, logs, periods, savePeriodLog, cycleInfo, selectedDate } = useTracker();
   const [logOpen, setLogOpen] = useState(false);
   const [avaOpen, setAvaOpen] = useState(false);
   const { cycleDay, phase } = cycleInfo(today);
@@ -118,9 +142,17 @@ export function OverviewPage({ onNavigate }: { onNavigate: (route: CycleRoute) =
   );
   const ava = useAvaChat(avaContext);
 
+  // Recommendation additions come only from saved data for the selected date (recomputed after every save)
+  const personalRecommendation = useMemo(() => {
+    const extra = personalizeRecommendation(logs[selectedDate]);
+    if (!extra) return null;
+    const dateLabel = selectedDate === today ? 'Today' : formatDate(selectedDate, { weekday: 'short', month: 'short', day: 'numeric' });
+    return { ...extra, dateLabel };
+  }, [logs, selectedDate, today]);
+
   return (
     <div className="flex flex-col gap-grid">
-      <div className="grid grid-cols-1 gap-grid lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div className="grid grid-cols-1 gap-grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <CycleStatusCard cycleDay={cycleDay} cycleLength={PATIENT.cycleLengthDays} phase={phase} />
         <PhaseCard phase={phase} onLogPeriod={() => setLogOpen(true)} onViewTips={scrollToRecommendation} />
       </div>
@@ -131,7 +163,13 @@ export function OverviewPage({ onNavigate }: { onNavigate: (route: CycleRoute) =
         ))}
       </div>
 
-      <AIRecommendation phase={phase} onAskAva={() => setAvaOpen(true)} />
+      <LutealLogCards
+        date={selectedDate}
+        isToday={selectedDate === today}
+        log={logs[selectedDate]}
+        onOpenSection={(section) => openDailyLogSection(onNavigate, LUTEAL_SECTION_IDS[section])}
+      />
+      <AIRecommendation phase={phase} onAskAva={() => setAvaOpen(true)} personal={personalRecommendation} />
       <MedicationHistory entries={MEDICATION_HISTORY} onViewAll={() => onNavigate('/daily-log')} />
       <CycleInsights onViewDetails={() => onNavigate('/insights')} />
 

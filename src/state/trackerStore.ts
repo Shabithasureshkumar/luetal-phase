@@ -5,7 +5,11 @@ import type { TrackerState } from './TrackerContext';
 
 export interface TrackerApi extends TrackerState {
   today: string;
-  saveDailyLog: (date: string, log: DailyLogData) => void;
+  /** Date selected in Daily Log (shared so Overview summaries follow it) */
+  selectedDate: string;
+  selectDate: (date: string) => void;
+  /** Returns false when the log could not be written to storage */
+  saveDailyLog: (date: string, log: DailyLogData) => boolean;
   savePeriodLog: (date: string, log: PeriodLog) => void;
   addMedication: (medication: Omit<Medication, 'id'>) => void;
   cycleInfo: (date: string) => CycleInfo;

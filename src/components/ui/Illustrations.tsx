@@ -39,3 +39,69 @@ export function WaterGlassArt({ className = '' }: { className?: string }) {
     </svg>
   );
 }
+
+/** Glossy 3D wellness badge with a pulse line — "Today's Symptoms" card. */
+export function SymptomArt({ className = '' }: { className?: string }) {
+  const id = useSvgId();
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
+      <defs>
+        <radialGradient id={`${id}-body`} cx="0.35" cy="0.3" r="0.8">
+          <stop offset="0" stopColor="#FBCFE8" />
+          <stop offset="0.55" stopColor="#F472B6" />
+          <stop offset="1" stopColor="#DB2777" />
+        </radialGradient>
+        <linearGradient id={`${id}-rim`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.9" />
+          <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
+        </linearGradient>
+        <filter id={`${id}-shadow`} x="-30%" y="-30%" width="160%" height="170%">
+          <feDropShadow dx="0" dy="3" stdDeviation="2.5" floodColor="#BE185D" floodOpacity="0.28" />
+        </filter>
+      </defs>
+      <ellipse cx="32" cy="58" rx="16" ry="2.6" fill="#FBCFE8" opacity="0.7" />
+      <g filter={`url(#${id}-shadow)`}>
+        <rect x="9" y="7" width="46" height="46" rx="15" fill={`url(#${id}-body)`} />
+        <rect x="11" y="9" width="42" height="20" rx="11" fill={`url(#${id}-rim)`} opacity="0.55" />
+      </g>
+      {/* pulse line with a darker underlay for depth */}
+      <path d="M15 33h8l3.5-8 5 15 4-11 2.5 4H49" fill="none" stroke="#9D174D" strokeOpacity="0.35" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" transform="translate(0 1.2)" />
+      <path d="M15 33h8l3.5-8 5 15 4-11 2.5 4H49" fill="none" stroke="#FFFFFF" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
+      <ellipse cx="21" cy="15" rx="6" ry="3" fill="#FFFFFF" opacity="0.6" transform="rotate(-20 21 15)" />
+    </svg>
+  );
+}
+
+/** Two glossy 3D hearts — "Intercourse" card. */
+export function IntimacyArt({ className = '' }: { className?: string }) {
+  const id = useSvgId();
+  const heart = 'M32 54C18 44 8 35.5 8 24.5 8 17 13.8 11 21 11c4.6 0 8.6 2.4 11 6 2.4-3.6 6.4-6 11-6 7.2 0 13 6 13 13.5C56 35.5 46 44 32 54z';
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
+      <defs>
+        <radialGradient id={`${id}-front`} cx="0.35" cy="0.3" r="0.85">
+          <stop offset="0" stopColor="#FECDD3" />
+          <stop offset="0.5" stopColor="#FB7185" />
+          <stop offset="1" stopColor="#E11D48" />
+        </radialGradient>
+        <radialGradient id={`${id}-back`} cx="0.35" cy="0.3" r="0.85">
+          <stop offset="0" stopColor="#EDE9FE" />
+          <stop offset="0.55" stopColor="#C4B5FD" />
+          <stop offset="1" stopColor="#8B5CF6" />
+        </radialGradient>
+        <filter id={`${id}-shadow`} x="-30%" y="-30%" width="160%" height="170%">
+          <feDropShadow dx="0" dy="3" stdDeviation="2.5" floodColor="#9F1239" floodOpacity="0.25" />
+        </filter>
+      </defs>
+      <ellipse cx="30" cy="59" rx="17" ry="2.6" fill="#FBCFE8" opacity="0.7" />
+      <g transform="translate(14 -4) scale(0.72)" filter={`url(#${id}-shadow)`}>
+        <path d={heart} fill={`url(#${id}-back)`} />
+        <ellipse cx="20" cy="20" rx="6" ry="3.2" fill="#FFFFFF" opacity="0.55" transform="rotate(-30 20 20)" />
+      </g>
+      <g transform="translate(-2 6) scale(0.82)" filter={`url(#${id}-shadow)`}>
+        <path d={heart} fill={`url(#${id}-front)`} />
+        <ellipse cx="20" cy="20" rx="6.5" ry="3.4" fill="#FFFFFF" opacity="0.6" transform="rotate(-30 20 20)" />
+      </g>
+    </svg>
+  );
+}

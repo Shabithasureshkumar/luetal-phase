@@ -1,8 +1,9 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { EMPTY_DAILY_LOG, GLASS_ML, WATER_TARGET_ML } from '../data/cycle';
 import { addDays, addMonths, diffDays } from '../lib/date';
+import { lutealFieldErrors } from '../lib/lutealLog';
 import { useTracker } from '../state/trackerStore';
-import type { DailyLogData } from '../types/tracker';
+import type { DailyLogData, LutealSymptom, ProtectionMethod } from '../types/tracker';
 
 /**
  * Daily Log page state: the selected date plus an editable draft of that date's log.
@@ -23,7 +24,8 @@ function validate(log: DailyLogData): string | null {
       return `Enter a body weight between ${WEIGHT_RANGE_KG.min} and ${WEIGHT_RANGE_KG.max} kg.`;
     }
   }
-  return null;
+  const fields = lutealFieldErrors(log);
+  return fields.customSymptom ?? fields.protectionOther ?? null;
 }
 const CENTER = Math.floor(WINDOW_DAYS / 2);
 
@@ -34,23 +36,31 @@ interface NavState {
 }
 
 export function useDailyLog() {
-  const { today, logs, saveDailyLog, cycleInfo, medications, addMedication } = useTracker();
+  const { today, logs, saveDailyLog, cycleInfo, medications, addMedication, selectedDate: sharedDate, selectDate: shareDate } =
+    useTracker();
   const [justSaved, setJustSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [noChanges, setNoChanges] = useState(false);
+  // Inline field errors appear only after a save attempt
+  const [showErrors, setShowErrors] = useState(false);
 
   // Read inside state updaters so rapid consecutive clicks never use a stale snapshot
   const logsRef = useRef(logs);
   logsRef.current = logs;
 
   // Selection, window and draft change together, so they live in one state object
+  // Re-open on the date last viewed (shared with Overview); defaults to today
   const [nav, setNav] = useState<NavState>(() => ({
-    selectedDate: today,
-    windowStart: addDays(today, -CENTER),
-    draft: logs[today] ?? EMPTY_DAILY_LOG,
+    selectedDate: sharedDate,
+    windowStart: addDays(sharedDate, -CENTER),
+    draft: logs[sharedDate] ?? EMPTY_DAILY_LOG,
   }));
   const { selectedDate, windowStart, draft } = nav;
   const saved = logs[selectedDate];
+
+  useEffect(() => {
+    shareDate(selectedDate);
+  }, [selectedDate, shareDate]);
 
   const navigate = useCallback((next: (s: NavState) => { date: string; windowStart: string }) => {
     setNav((s) => {
@@ -60,6 +70,7 @@ export function useDailyLog() {
     setJustSaved(false);
     setError(null);
     setNoChanges(false);
+    setShowErrors(false);
   }, []);
 
   /** Select a date; the window only moves if the date isn't already visible. */
@@ -98,12 +109,56 @@ export function useDailyLog() {
     [windowStart],
   );
 
-  const update = useCallback(<K extends keyof DailyLogData>(key: K, value: DailyLogData[K]) => {
-    setNav((s) => ({ ...s, draft: { ...s.draft, [key]: value } }));
+  /** Apply a change to the draft from its latest value (safe for rapid consecutive input). */
+  const edit = useCallback((change: (d: DailyLogData) => DailyLogData) => {
+    setNav((s) => ({ ...s, draft: change(s.draft) }));
     setJustSaved(false);
     setError(null);
     setNoChanges(false);
   }, []);
+
+  const update = useCallback(
+    <K extends keyof DailyLogData>(key: K, value: DailyLogData[K]) => edit((d) => ({ ...d, [key]: value })),
+    [edit],
+  );
+
+  // --- Luteal symptom + intercourse rules (mutual exclusivity, no stale dependent values) ---
+  const luteal = useMemo(
+    () => ({
+      toggleSymptom: (symptom: LutealSymptom) =>
+        edit((d) => {
+          const on = d.symptoms.includes(symptom);
+          return {
+            ...d,
+            noSymptoms: false,
+            symptoms: on ? d.symptoms.filter((x) => x !== symptom) : [...d.symptoms, symptom],
+            customSymptom: symptom === 'Other' && on ? '' : d.customSymptom,
+          };
+        }),
+      toggleNoSymptoms: () =>
+        edit((d) =>
+          d.noSymptoms
+            ? { ...d, noSymptoms: false }
+            : { ...d, noSymptoms: true, symptoms: [], customSymptom: '', symptomSeverity: null },
+        ),
+      setSeverity: (value: number) =>
+        edit((d) => ({ ...d, symptomSeverity: d.symptomSeverity === value ? null : value })),
+      setCustomSymptom: (text: string) => edit((d) => ({ ...d, customSymptom: text })),
+      setIntercourse: (answer: boolean) =>
+        edit((d) =>
+          answer ? { ...d, intercourse: true } : { ...d, intercourse: false, protection: null, protectionOther: '' },
+        ),
+      setProtection: (method: ProtectionMethod) =>
+        edit((d) => {
+          const next = d.protection === method ? null : method;
+          return { ...d, protection: next, protectionOther: next === 'Other' ? d.protectionOther : '' };
+        }),
+      setProtectionOther: (text: string) => edit((d) => ({ ...d, protectionOther: text })),
+    }),
+    [edit],
+  );
+
+  const fieldErrors = useMemo(() => (showErrors ? lutealFieldErrors(draft) : {}), [showErrors, draft]);
 
   const isDirty = useMemo(
     () => JSON.stringify(draft) !== JSON.stringify(saved ?? EMPTY_DAILY_LOG),
@@ -118,10 +173,24 @@ export function useDailyLog() {
     }
     const problem = validate(draft);
     setError(problem);
+    setShowErrors(problem !== null);
     if (problem) return;
-    saveDailyLog(selectedDate, { ...draft, weight: draft.weight.trim() });
+    const record: DailyLogData = {
+      ...draft,
+      weight: draft.weight.trim(),
+      customSymptom: draft.customSymptom.trim(),
+      protectionOther: draft.protectionOther.trim(),
+      phase: cycleInfo(selectedDate).phase,
+    };
+    const stored = saveDailyLog(selectedDate, record);
+    // Keep the draft identical to what was stored, so the form isn't reported as "unsaved"
+    setNav((s) => (s.selectedDate === selectedDate ? { ...s, draft: record } : s));
+    if (!stored) {
+      setError("Couldn't save to this browser's storage. Your log is kept for this session only.");
+      return;
+    }
     setJustSaved(true);
-  }, [isDirty, draft, saveDailyLog, selectedDate]);
+  }, [isDirty, draft, saveDailyLog, selectedDate, cycleInfo]);
 
   const hydration = useMemo(
     () => ({
@@ -148,6 +217,8 @@ export function useDailyLog() {
     shiftMonth: (n: number) => recenter((s) => addMonths(s.selectedDate, n)),
     draft,
     update,
+    luteal,
+    fieldErrors,
     changeWater: (deltaMl: number) => {
       setNav((s) => ({
         ...s,

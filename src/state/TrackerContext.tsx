@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   CRAMPS_LEVELS,
   CRAVING_LEVELS,
@@ -6,16 +6,19 @@ import {
   ENERGY_LEVELS,
   FATIGUE_LEVELS,
   FLOW_LEVELS,
+  LUTEAL_SYMPTOMS,
   MEDICATIONS,
   MOOD_TYPES,
   PATIENT,
+  PROTECTION_METHODS,
   SAMPLE_CYCLE_DAY,
   SAMPLE_DAILY_LOG,
   SLEEP_QUALITIES,
 } from '../data/cycle';
 import { derivePeriodStarts, getCycleInfo } from '../lib/cycle';
+import { CUSTOM_TEXT_MAX } from '../lib/lutealLog';
 import { addDays, todayISO } from '../lib/date';
-import type { DailyLogData, Medication, MedicationStatus, PeriodLog } from '../types/tracker';
+import type { CyclePhase, DailyLogData, Medication, MedicationStatus, PeriodLog } from '../types/tracker';
 import { TrackerContext } from './trackerStore';
 
 export interface TrackerState {
@@ -31,6 +34,7 @@ export interface TrackerState {
 
 
 const STORAGE_KEY = 'cycle-tracker:v1';
+const CYCLE_PHASES: readonly CyclePhase[] = ['menstruation', 'follicular', 'fertile', 'ovulation', 'luteal'];
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -60,6 +64,19 @@ function restoreLog(raw: Record<string, unknown>): DailyLogData {
     stepGoal: num(raw.stepGoal, EMPTY_DAILY_LOG.stepGoal),
     steps: num(raw.steps, 0),
     waterMl: num(raw.waterMl, 0),
+    phase: oneOf(CYCLE_PHASES, raw.phase, null),
+    symptoms: Array.isArray(raw.symptoms)
+      ? LUTEAL_SYMPTOMS.filter((s) => (raw.symptoms as unknown[]).includes(s))
+      : [],
+    noSymptoms: raw.noSymptoms === true,
+    customSymptom: typeof raw.customSymptom === 'string' ? raw.customSymptom.slice(0, CUSTOM_TEXT_MAX) : '',
+    symptomSeverity:
+      typeof raw.symptomSeverity === 'number' && Number.isInteger(raw.symptomSeverity) && raw.symptomSeverity >= 0 && raw.symptomSeverity <= 10
+        ? raw.symptomSeverity
+        : null,
+    intercourse: typeof raw.intercourse === 'boolean' ? raw.intercourse : null,
+    protection: oneOf(PROTECTION_METHODS, raw.protection, null),
+    protectionOther: typeof raw.protectionOther === 'string' ? raw.protectionOther.slice(0, CUSTOM_TEXT_MAX) : '',
   };
 }
 
@@ -132,6 +149,11 @@ function initialState(today: string): TrackerState {
 export function TrackerProvider({ children }: { children: ReactNode }) {
   const [today, setToday] = useState(todayISO);
   const [state, setState] = useState(() => initialState(today));
+  // Latest state, so a save can be written to storage synchronously and its result reported
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  // The date being viewed in Daily Log; Overview's log summaries follow it (session only)
+  const [selectedDate, setSelectedDate] = useState(today);
 
   // Roll "today" over at midnight (or when a backgrounded tab becomes visible again)
   useEffect(() => {
@@ -157,8 +179,17 @@ export function TrackerProvider({ children }: { children: ReactNode }) {
     [state.cycleStart, state.periods],
   );
 
+  /** Saves one date's log (one record per date — re-saving replaces it). Returns false if storage failed. */
   const saveDailyLog = useCallback((date: string, log: DailyLogData) => {
-    setState((s) => ({ ...s, logs: { ...s.logs, [date]: log } }));
+    const next = { ...stateRef.current, logs: { ...stateRef.current.logs, [date]: log } };
+    stateRef.current = next;
+    setState(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return true;
+    } catch {
+      return false;
+    }
   }, []);
 
   const savePeriodLog = useCallback((date: string, log: PeriodLog) => {
@@ -175,8 +206,8 @@ export function TrackerProvider({ children }: { children: ReactNode }) {
   const cycleInfo = useCallback((date: string) => getCycleInfo(date, starts, PATIENT.cycleLengthDays), [starts]);
 
   const api = useMemo(
-    () => ({ ...state, today, saveDailyLog, savePeriodLog, addMedication, cycleInfo }),
-    [state, today, saveDailyLog, savePeriodLog, addMedication, cycleInfo],
+    () => ({ ...state, today, selectedDate, selectDate: setSelectedDate, saveDailyLog, savePeriodLog, addMedication, cycleInfo }),
+    [state, today, selectedDate, saveDailyLog, savePeriodLog, addMedication, cycleInfo],
   );
 
   return <TrackerContext.Provider value={api}>{children}</TrackerContext.Provider>;

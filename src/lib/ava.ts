@@ -88,6 +88,11 @@ function loggedSummary(log: DailyLogData | undefined): string[] {
   if (log.cravings) items.push(`cravings ${log.cravings.toLowerCase()}`);
   if (log.waterMl > 0) items.push(`${log.waterMl.toLocaleString('en-US')} ml of water`);
   if (log.weight) items.push(`weight ${log.weight} kg`);
+  if (log.noSymptoms) items.push('no symptoms');
+  else if (log.symptoms.length) {
+    const named = log.symptoms.map((s) => (s === 'Other' ? log.customSymptom || 'other' : s.toLowerCase()));
+    items.push(`symptoms: ${named.join(', ')}${log.symptomSeverity !== null ? ` (severity ${log.symptomSeverity}/10)` : ''}`);
+  }
   return items;
 }
 

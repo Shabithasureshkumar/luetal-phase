@@ -1,4 +1,5 @@
 import { PHASE_INFO } from '../../data/cycle';
+import type { PersonalizedRecommendation } from '../../lib/lutealLog';
 import type { CyclePhase } from '../../types/tracker';
 import { AvaAvatar } from '../ui/AvaAvatar';
 import { Emoji } from '../ui/Emoji';
@@ -9,7 +10,14 @@ const CHIPS = [
   { label: 'Sleep 8h', emoji: '😴' },
 ];
 
-export function AIRecommendation({ phase, onAskAva }: { phase: CyclePhase; onAskAva: () => void }) {
+interface AIRecommendationProps {
+  phase: CyclePhase;
+  onAskAva: () => void;
+  /** Additions derived from the saved log (absent → the card shows only the phase recommendation) */
+  personal?: (PersonalizedRecommendation & { dateLabel: string }) | null;
+}
+
+export function AIRecommendation({ phase, onAskAva, personal }: AIRecommendationProps) {
   return (
     <section id="ai-recommendation" tabIndex={-1} aria-labelledby="ai-recommendation-title" className="card scroll-mt-6 p-[clamp(12px,1.2vw,18px)] outline-none">
       <header className="flex items-center justify-between gap-3 px-1">
@@ -34,6 +42,18 @@ export function AIRecommendation({ phase, onAskAva }: { phase: CyclePhase; onAsk
         <AvaAvatar className="h-[clamp(52px,4.2vw,68px)] w-[clamp(52px,4.2vw,68px)] shrink-0" />
         <div className="min-w-0">
           <p className="text-body text-ink-soft">{PHASE_INFO[phase].recommendation}</p>
+          {personal && (
+            <div className="mt-3 border-t border-[#EDE9FE] pt-3">
+              <p className="text-caption font-semibold uppercase tracking-[0.06em] text-[#6D28D9]">From your log · {personal.dateLabel}</p>
+              <ul className="mt-1.5 flex flex-col gap-1">
+                {personal.lines.map((line) => (
+                  <li key={line} className="text-label text-ink-soft">
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <ul className="mt-3 flex flex-wrap gap-2">
             {CHIPS.map((chip) => (
               <li
@@ -42,6 +62,11 @@ export function AIRecommendation({ phase, onAskAva }: { phase: CyclePhase; onAsk
               >
                 {chip.label}
                 <Emoji symbol={chip.emoji} className="text-[12px]" />
+              </li>
+            ))}
+            {personal?.chips.map((chip) => (
+              <li key={chip} className="inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-caption font-medium text-brand-strong">
+                {chip}
               </li>
             ))}
           </ul>
